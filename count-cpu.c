@@ -1,51 +1,22 @@
-#include <errno.h>
-#include <pmc.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
+
 #include <stdio.h>
-#include <string.h>
 
-char error[120];
+int read_integer_sysctl_value (const char *name) {
+    size_t len = 4;
+    int value;
 
-void handle_pmc_init_error () {
-    if (errno == ENOENT) {
-        strcpy(error, "The hwpmc(4) module was not found in the kernel.");
-        return;
-    }
+    int result = sysctlbyname(name, &value, &len, NULL, 0);
 
-    if (errno == EPROGMISMATCH) {
-        strcpy(error, "The library's version number did not match that expected by hwpmc(4).");
-        return;
-    }
-
-    if (errno == ENXIO) {
-        strcpy(error, "PMC hardware on this system is unsupported.");
-    }
+    return value;
 }
 
-int count_cpu (int *ncpu) {
-    int result;
-
-    result = pmc_init();
-    if (result == -1) {
-        handle_pmc_init_error();
-        return 0;
-    }
-
-    *ncpu = pmc_ncpu();
-    return 1;
-}
-
-void print_error () {
-    fprintf(stderr, "%s\n", error);
+int count_cpu () {
+    return read_integer_sysctl_value("hw.ncpu");
 }
 
 int main (int argc, char *argv[]) {
-    int ncpu;
-
-    if (!count_cpu(&ncpu)) {
-        print_error();
-        return 1;
-    }
-
-    printf("%d\n", ncpu);
+    printf("%d\n", count_cpu());
     return 0;
 }
