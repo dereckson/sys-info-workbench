@@ -1,9 +1,16 @@
 CC=clang
+BUILD=build
 
-all: count-cpu
+all: build $(BUILD)/count-cpu $(BUILD)/get-cpu-speed
 
 clean:
-	rm -f count-cpu
+	rm -rf $(BUILD)
 
-count-cpu:
-	$(CC) count-cpu.c -o count-cpu
+build:
+	mkdir $(BUILD)
+
+build/count-cpu:
+	$(CC) count-cpu.c -o $(BUILD)/count-cpu
+
+build/get-cpu-speed:
+	$(CC) get-cpu-speed.c -o $(BUILD)/get-cpu-speed
