@@ -1,0 +1,12 @@
+#!/bin/sh
+
+BUILD_DIR=build
+
+scripts=$(ls $BUILD_DIR)
+
+for script in $scripts;
+do
+    # shellcheck disable=SC2039
+    echo -n "$script: "
+    "$BUILD_DIR/$script"
+done
